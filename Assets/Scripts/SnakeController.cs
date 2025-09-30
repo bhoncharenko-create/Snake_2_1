@@ -36,11 +36,11 @@ public class SnakeController : MonoBehaviour
         while (true)
         {
             // ÏÐÎÂÅÐÊÀ ÏÀÓÇÛ
-            if (GameManager.Instance != null && GameManager.Instance.IsGamePaused())
-            {
-                yield return new WaitForSeconds(0.1f);
-                continue;
-            }
+            //if (GameManager.Instance != null && GameManager.Instance.IsGamePaused())
+           // {
+           //     yield return new WaitForSeconds(0.1f);
+            //    continue;
+            //}
 
             // Îñòàëüíîé êîä áåç èçìåíåíèé...
             if (directionQueue.Count > 0)

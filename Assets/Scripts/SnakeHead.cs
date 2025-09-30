@@ -4,6 +4,7 @@ public class SnakeHead : MonoBehaviour
 {
     public GameObject deathMenu;
     public AudioSource crashSound;
+    public GameObject pauseButton;
     public void Start()
     {
         Time.timeScale = 1;
@@ -21,6 +22,8 @@ public class SnakeHead : MonoBehaviour
             crashSound.Play();  
             deathMenu.SetActive(true); 
             Time.timeScale = 0;
+            pauseButton.SetActive(false);
+            GameManager.isDead = true;
         }
     }
 }

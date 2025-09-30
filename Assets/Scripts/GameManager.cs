@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public static bool isDead = false;
 
     [Header("Pause Settings")]
     public GameObject pausePanel;
@@ -18,12 +19,13 @@ public class GameManager : MonoBehaviour
     public Slider musicSlider;
     public Slider sfxSlider;
     public Button closeSoundSettingsButton;
+    public AudioSource backgroundMusic;
 
     private bool isPaused = false;
     private bool isSoundEnabled = true;
 
     private void Awake()
-    {
+    {   isDead = false;
         if (Instance == null)
         {
             Instance = this;
@@ -69,7 +71,8 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update()
-    {
+    {   
+        if (isDead) return;
         // Пауза по ESC
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -84,6 +87,7 @@ public class GameManager : MonoBehaviour
     {
         isPaused = true;
         Time.timeScale = 0f;
+        backgroundMusic.Pause();
 
         if (pausePanel != null)
             pausePanel.SetActive(true);
@@ -96,7 +100,7 @@ public class GameManager : MonoBehaviour
     {
         isPaused = false;
         Time.timeScale = 1f;
-
+        backgroundMusic.Play();
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
