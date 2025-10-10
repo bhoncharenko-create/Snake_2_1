@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public Button resumeButton;
     public Button restartButton;
     public Button soundButton;
+    public Button exitButton;
 
     [Header("Sound Settings")]
     public GameObject soundSettingsPanel;
@@ -25,7 +26,8 @@ public class GameManager : MonoBehaviour
     private bool isSoundEnabled = true;
 
     private void Awake()
-    {   isDead = false;
+    {
+        isDead = false;
         if (Instance == null)
         {
             Instance = this;
@@ -38,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Настраиваем кнопки паузы
+        // РљРЅРѕРїРєРё РїР°СѓР·С‹
         if (pauseButton != null)
             pauseButton.onClick.AddListener(PauseGame);
 
@@ -51,18 +53,21 @@ public class GameManager : MonoBehaviour
         if (soundButton != null)
             soundButton.onClick.AddListener(OpenSoundSettings);
 
-        // Настраиваем кнопки настроек звука
+        if (exitButton != null)
+            exitButton.onClick.AddListener(ExitGame);
+
+        // РљРЅРѕРїРєРё Р·РІСѓРєР°
         if (closeSoundSettingsButton != null)
             closeSoundSettingsButton.onClick.AddListener(CloseSoundSettings);
 
-        // Настраиваем слайдеры
+        // РЎР»Р°Р№РґРµСЂС‹
         if (musicSlider != null)
             musicSlider.onValueChanged.AddListener(SetMusicVolume);
 
         if (sfxSlider != null)
             sfxSlider.onValueChanged.AddListener(SetSFXVolume);
 
-        // Скрываем панели в начале
+        // РџР°РЅРµР»Рё
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
@@ -71,10 +76,16 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update()
-    {   
-        if (isDead) return;
-        // Пауза по ESC
-        if (Input.GetKeyDown(KeyCode.Escape))
+    {
+        // рџ‘‰ Р РµСЃС‚Р°СЂС‚ РїРѕ РїСЂРѕР±РµР»Сѓ СЂР°Р±РѕС‚Р°РµС‚ РўРћР›Р¬РљРћ РµСЃР»Рё Р·РјРµСЏ РјРµСЂС‚РІР°
+        if (isDead && Input.GetKeyDown(KeyCode.Space))
+        {
+            RestartGame();
+            return;
+        }
+
+        // в›” Р‘Р»РѕРєРёСЂСѓРµРј РїР°СѓР·Сѓ, РµСЃР»Рё Р·РјРµСЏ РјРµСЂС‚РІР°
+        if (!isDead && Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
                 ResumeGame();
@@ -83,11 +94,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     public void PauseGame()
     {
         isPaused = true;
         Time.timeScale = 0f;
-        backgroundMusic.Pause();
+        if (backgroundMusic != null)
+            backgroundMusic.Pause();
 
         if (pausePanel != null)
             pausePanel.SetActive(true);
@@ -100,7 +113,9 @@ public class GameManager : MonoBehaviour
     {
         isPaused = false;
         Time.timeScale = 1f;
-        backgroundMusic.Play();
+        if (backgroundMusic != null)
+            backgroundMusic.Play();
+
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
@@ -113,52 +128,54 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        // Снимаем паузу и перезагружаем сцену
-        ResumeGame();
+        Time.timeScale = 1f;
+        isPaused = false;
+        isDead = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        // С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р»Рѕ РІ СЂРµРґР°РєС‚РѕСЂРµ Unity
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 
     public void OpenSoundSettings()
     {
-        // Открываем панель настроек звука
         if (soundSettingsPanel != null)
             soundSettingsPanel.SetActive(true);
     }
 
     public void CloseSoundSettings()
     {
-        // Закрываем панель настроек звука
         if (soundSettingsPanel != null)
             soundSettingsPanel.SetActive(false);
     }
 
     public void ToggleSound()
     {
-        // Переключаем звук
         isSoundEnabled = !isSoundEnabled;
         AudioListener.volume = isSoundEnabled ? 1f : 0f;
 
-        // Обновляем текст кнопки
         if (soundButton != null)
         {
             Text buttonText = soundButton.GetComponentInChildren<Text>();
             if (buttonText != null)
-                buttonText.text = isSoundEnabled ? "Звук: ВКЛ" : "Звук: ВЫКЛ";
+                buttonText.text = isSoundEnabled ? "Р—РІСѓРє: Р’РљР›" : "Р—РІСѓРє: Р’Р«РљР›";
         }
     }
 
     public void SetMusicVolume(float volume)
     {
-        // Устанавливаем громкость музыки
-        // Здесь нужно заменить на твою систему аудио
-        // Пример: AudioManager.Instance.SetMusicVolume(volume);
+        
     }
 
     public void SetSFXVolume(float volume)
     {
-        // Устанавливаем громкость звуковых эффектов
-        // Здесь нужно заменить на твою систему аудио
-        // Пример: AudioManager.Instance.SetSFXVolume(volume);
+        // СЃСЋРґР° РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ РіСЂРѕРјРєРѕСЃС‚СЊСЋ СЌС„С„РµРєС‚РѕРІ
     }
 
     public bool IsGamePaused()
